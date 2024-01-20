@@ -2,25 +2,17 @@ const router = require("express").Router();
 
 const { getUsers, getUser, createUser, temp } = require("../controllers/users");
 
-//CRUD
-
-//Create
-router.post("/", createUser);
-router.post("/:_temp", (req, res) => {
-  console.log(`router body: `, req.body);
-  temp(req, res);
-});
-
-//Read
-router.get("/:_id", getUser);
-router.get("/", getUsers);
-
-//Update
-
-//Delete
-
-module.exports = router;
+/* GET Routes */
 
 // GET /users — returns all users
+router.get("/", getUsers);
+
 // GET /users/:userId - returns a user by _id
+router.get("/:_id", getUser);
+
+/* POST Routes */
+
 // POST /users — creates a new user
+router.post("/", createUser);
+
+module.exports = router;

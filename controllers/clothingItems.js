@@ -1,19 +1,23 @@
 const ClothingItem = require("../models/clothingItem");
 const {
   INVALID_DATA_ERROR,
-  NOTFOUND_ERROR,
+  NOT_FOUND_ERROR,
   DEFAULT_ERROR,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  const { name, weather, imageURL } = req;
+  const { name, weather, imageUrl } = req.body;
+  const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageURL, owner: req.user._id })
-    .then((item) => {
-      res.send({ data: item });
-    })
+  ClothingItem.create({ name, weather, imageUrl, owner })
+    .then((item) => res.send(item))
     .catch((e) => {
-      res.status(DEFAULT_ERROR).send({ message: "Error from createItem", e });
+      console.error(e);
+      if (e.name === `ValidationError`) {
+        res.status(INVALID_DATA_ERROR).send({ message: e.message });
+      } else {
+        res.status(DEFAULT_ERROR).send({ message: "Error from createItem" });
+      }
     });
 };
 
@@ -22,7 +26,6 @@ const getItems = (req, res) => {
     .then((items) => res.send(items))
     .catch((e) => {
       console.error(e);
-      console.log(err.name);
       res.status(DEFAULT_ERROR).send({ message: "Error from getItems" });
     });
 };
@@ -41,20 +44,31 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => res.status(200).send({ message: "Item is deleted" }))
+    .then(() => res.send({}))
     .catch((e) => {
       console.error(e);
-      if (e.name === `CastError`) {
-        res
-          .status(INVALID_DATA_ERROR)
-          .send({ message: `${e.name} error on deleteItem` });
-      } else if (e.name === "DocumentNotFoundError") {
-        res.status(NOTFOUND_ERROR).send({ message: "Error from deleteItem" });
-      } else {
-        res.status(DEFAULT_ERROR).send({ message: "deleteItem Failed" });
+
+      switch (e.name) {
+        /** _id not found */
+        case "DocumentNotFoundError": {
+          res.status(NOT_FOUND_ERROR).send({
+            message: `No ClothingItem found with _id of ${itemId}`,
+          });
+          break;
+        }
+        /** Invalid _id */
+        case "CastError": {
+          res
+            .status(INVALID_DATA_ERROR)
+            .send({ message: `Invalid _id: ${itemId}` });
+          break;
+        }
+        default: {
+          res.status(DEFAULT_ERROR).send({ message: "Error from deleteItem" });
+          break;
+        }
       }
     });
 };
@@ -71,19 +85,28 @@ const likeItem = (req, res) => {
     { new: true },
   )
     .orFail()
-    .then((item) => res.status(REQUEST_SUCCESSFUL).send({ data: item }))
+    .then((item) => res.send(item))
     .catch((e) => {
       console.error(e);
-      if (e.name === `DocumentNotFoundError`) {
-        res
-          .status(NOTFOUND_ERROR)
-          .send({ message: `${e.name} Error at likeItem` });
-      } else if (e.name === `CastError`) {
-        res
-          .status(INVALID_DATA_ERROR)
-          .send({ message: "Invalid Credentials Unable to Add Like" });
-      } else {
-        res.status(DEFAULT_ERROR).send({ message: "Internal Server Error" });
+      switch (e.name) {
+        /** _id not found */
+        case "DocumentNotFoundError": {
+          res.status(NOT_FOUND_ERROR).send({
+            message: `No ClothingItem found with _id of ${itemId}`,
+          });
+          break;
+        }
+        /** Invalid _id */
+        case "CastError": {
+          res
+            .status(INVALID_DATA_ERROR)
+            .send({ message: `Invalid ClothingItem _id: ${itemId}` });
+          break;
+        }
+        default: {
+          res.status(DEFAULT_ERROR).send({ message: "Error from likeItem" });
+          break;
+        }
       }
     });
 };
@@ -98,19 +121,28 @@ const dislikeItem = (req, res) => {
     { new: true },
   )
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => res.send(item))
     .catch((e) => {
       console.error(e);
-      if (e.name === "DocumentNotFoundError") {
-        res
-          .status(NOTFOUND_ERROR)
-          .send({ message: `${e.name} Error at dislikeItem` });
-      } else if (e.name === `CastError`) {
-        res
-          .status(INVALID_DATA_ERROR)
-          .send({ message: "Invalid Credential Unable to Remove Like" });
-      } else {
-        res.status(DEFAULT_ERROR).send({ message: "Internal Server Error" });
+      switch (e.name) {
+        /** _id not found */
+        case "DocumentNotFoundError": {
+          res.status(NOT_FOUND_ERROR).send({
+            message: `No ClothingItem found with _id of ${itemId}`,
+          });
+          break;
+        }
+        /** Invalid _id */
+        case "CastError": {
+          res
+            .status(INVALID_DATA_ERROR)
+            .send({ message: `Invalid ClothingItem _id: ${itemId}` });
+          break;
+        }
+        default: {
+          res.status(DEFAULT_ERROR).send({ message: "Error from dislikeItem" });
+          break;
+        }
       }
     });
 };

@@ -13,7 +13,7 @@ const user = new mongoose.Schema({
     required: true,
     validate: {
       validator: (v) => validator.isURL(v),
-      message: "Link is not",
+      message: "Link is not a valid URL",
     },
   },
 });
