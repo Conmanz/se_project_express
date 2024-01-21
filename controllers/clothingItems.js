@@ -30,22 +30,14 @@ const getItems = (req, res) => {
     });
 };
 
-// const updateItem = (req, res) => {
-//   const { itemId } = req.param;
-//   const { imageURL } = req.body;
-
-//   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
-//     .orFail()
-//     .then((item) => res.status);
-// };
-
-//Handling Deleting Item
+// Handling Deleting Item
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
+    // Sending empty body because no message is needed.
     .then(() => res.send({}))
     .catch((e) => {
       console.error(e);
@@ -73,7 +65,7 @@ const deleteItem = (req, res) => {
     });
 };
 
-//Handling Likes/Dislikes
+// Handling Likes/Dislikes
 
 const likeItem = (req, res) => {
   const userId = req.user._id;

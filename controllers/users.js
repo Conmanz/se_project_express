@@ -1,5 +1,4 @@
 const User = require("../models/user");
-const { ObjectId } = require("mongodb");
 const {
   INVALID_DATA_ERROR,
   NOT_FOUND_ERROR,
