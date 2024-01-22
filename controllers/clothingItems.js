@@ -38,9 +38,7 @@ const deleteItem = (req, res) => {
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     // Sending empty body because no message is needed.
-    .then(() =>
-      res.send({ message: "Error item has been successful in deletion" }),
-    )
+    .then(() => res.send({ message: "Item successfully deleted" }))
     .catch((e) => {
       console.error(e);
 
