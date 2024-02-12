@@ -93,20 +93,6 @@ const createUser = (req, res) => {
     });
 };
 
-// const createUser = (req, res) => {
-//   const { name, avatar } = req.body;
-//   User.create({ name, avatar })
-//     .then((user) => res.send(user))
-//     .catch((e) => {
-//       console.error(e);
-//       if (e.name === `ValidationError`) {
-//         res.status(INVALID_DATA_ERROR).send({ message: e.message });
-//       } else {
-//         res.status(DEFAULT_ERROR).send({ message: "Error from createUser" });
-//       }
-//     });
-// };
-
 const loginUser = (req, res) => {
   const { email, password } = req.body;
 
@@ -140,11 +126,11 @@ const loginUser = (req, res) => {
 };
 
 const getCurrentUser = (req, res) => {
-  const { id } = req.params;
-  User.findById(id)
+  const { _id } = req.user;
+  User.findById(_id)
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error("Unknown User"));
+        throw new Error("User not found");
       }
       return res.send({ data: user });
     })

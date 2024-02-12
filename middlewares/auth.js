@@ -13,12 +13,13 @@ const handleAuthorization = (req, res, next) => {
     return authError(res);
   }
 
-  const token = authorization.replace("Bearer", "");
+  const token = authorization.replace("Bearer ", "");
   let payload;
 
   try {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
+    console.error(err);
     return authError(res);
   }
 
