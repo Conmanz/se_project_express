@@ -22,7 +22,9 @@ const createItem = (req, res) => {
 };
 
 const getItems = (req, res) => {
-  ClothingItem.find({})
+  ClothingItem.find({
+    owner: req.user._id,
+  })
     .then((items) => res.send(items))
     .catch((e) => {
       console.error(e);

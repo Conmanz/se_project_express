@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { handleAuthorization } = require("../middlewares/auth");
 
 const {
   createItem,
@@ -11,7 +12,7 @@ const {
 /* GET Routes */
 
 // GET /items - returns all clothing items
-router.get("/", getItems);
+router.get("/", handleAuthorization, getItems);
 
 /* POST Routes */
 
