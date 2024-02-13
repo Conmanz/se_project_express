@@ -3,6 +3,7 @@ const {
   INVALID_DATA_ERROR,
   NOT_FOUND_ERROR,
   DEFAULT_ERROR,
+  FORBIDDEN_ERROR,
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
@@ -37,10 +38,16 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    // Sending empty body because no message is needed.
-    .then(() => res.send({ message: "Item successfully deleted" }))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res
+          .status(FORBIDDEN_ERROR)
+          .send({ message: "You are not authorized to delete this item" });
+      }
+      return item.deleteOne().then(() => res.send({ message: "Item deleted" }));
+    })
     .catch((e) => {
       console.error(e);
 

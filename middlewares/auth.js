@@ -6,6 +6,7 @@ const authError = (res) => {
   res.status(UNAUTHORIZED_ERROR).send({ message: "Authorization Required" });
 };
 
+// eslint-disable-next-line consistent-return
 const handleAuthorization = (req, res, next) => {
   const { authorization } = req.headers;
 
