@@ -11,10 +11,7 @@ const clothingItem = new mongoose.Schema({
   weather: {
     type: String,
     required: true,
-    validate: {
-      validator: (v) => validator.equals(v, "hot" || "warm" || "cold"),
-      message: "HELP ME",
-    },
+    enum: ["hot", "warm", "cold"],
   },
   imageUrl: {
     type: String,
